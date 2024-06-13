@@ -50,7 +50,7 @@ TEST(Iterators, test5) {
     ASSERT_EQ(*ci, 3);
 }
 
-//test iterator equals
+//test iterator equals, should be false, as they're comparing positions
 TEST(Iterators, test6) {
     MyLinkedList<int> ll;
     ll.add(3);
@@ -59,6 +59,22 @@ TEST(Iterators, test6) {
     MyLinkedList<int> ll2;
     ll2.add(3);
     auto ci2 = ll2.begin();
-    ASSERT_EQ(ci, ci2);
+    ASSERT_FALSE(ci == ci2);
 }
 
+//test std equals
+TEST(Iterators, test7) {
+    MyLinkedList<int> ll;
+    ll.add(3);
+    ll.add(4);
+    auto ci = ll.begin();
+    
+    MyLinkedList<int> ll2;
+    ll2.add(3);
+    ll2.add(4);
+    auto ci2 = ll2.begin();
+    ASSERT_TRUE(ll == ll2);
+
+    ll2.add(5);
+    ASSERT_FALSE(ll == ll2);
+}

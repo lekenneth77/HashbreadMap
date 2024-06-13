@@ -2,6 +2,7 @@
 #define MY_LINKED_LIST
 
 #include <initializer_list>
+#include <iterator>
 #include <algorithm>
 #include <stdexcept>
 
@@ -31,7 +32,7 @@ private:
 
     //equal operator
     friend bool operator==(const MyLinkedList& lhs, const MyLinkedList& rhs) {
-        return std::equal(lhs.begin(), rhs.begin());
+        return std::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
 
     //not equal operator
@@ -93,12 +94,17 @@ public:
     //iterator for this class, i have no plans on making a non const iterator
     class const_iterator {
     public:
-        //the question is, do i check by value? 
-        //that means two different nodes with the same value are equal
-        //but i'd like it so that two linked list are compared by value, not by if they have the same nodes...
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+        using pointer = const T*;
+        using reference = const T&;
+
+        //by standard (and it really makes sense why it's like this), iterators compare by position because well
+        //if you wanna check if you have two iterators at the same spot, then yeah
+        //checking by value, that's when you wanna use std::equal, which dereferences the iterator...! lol i should've known
         friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
-            return (lhs.curNode == nullptr && rhs.curNode == nullptr) || 
-                (lhs.curNode != nullptr && rhs.curNode != nullptr && lhs.curNode->val == rhs.curNode->val) ;
+            return lhs.curNode == rhs.curNode;
         }
 
         friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
@@ -113,6 +119,11 @@ public:
         //TODO should probably null check...!
         const T& operator* () const {
             return curNode->val;
+        }
+
+        //arrow operator
+        const T* operator->() const {
+            return &(curNode->val);
         }
 
         const_iterator& operator++() {
